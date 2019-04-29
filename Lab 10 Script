@@ -1,0 +1,23 @@
+# Script borrowed from the code that Michael Ycedo shared on Teams.  It was slightly modified to work for me.
+Import-Module ActiveDirectory
+
+# This portion was changed because it kept giving me errors.  Originally it read: Import-Csv $CSV
+$CSV = Import-csv C:\Scripts\ScriptA10\Lab10\users.csv
+
+foreach ($user in $CSV) {
+    $username = $user.Username
+    $fname = $user.FirstName
+    $lname = $user.LastName
+    $desc = $user.Description
+    $ou = $user.OUPath
+    $pass = $user.Password
+    $act = $user.Action
+    
+# I slightly modified this part as well because Michaels code kept adding the users that had the "Remove" action instead of deleting them.
+    if($act = 'Add'){
+        New-ADUser -Name $username -GivenName $fname -Surname $lname -Description $desc -Path $ou -AccountPassword (ConvertTo-SecureString -AsPlainText "p@ssw0rd" -Force) -ChangePasswordAtLogon $true
+    }
+    else {
+    	Remove-ADUser -Identity $user
+    }
+}
